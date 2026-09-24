@@ -38,7 +38,7 @@ const registerAdmin = async (req, res) => {
         });
 
         // 5. Trả về kết quả (password sẽ tự động bị ẩn do cấu hình toJSON ở Model)
-        return res.status(201).json({
+        return res.status(200).json({
             status: 'success',
             message: 'Đăng ký tài khoản Admin thành công',
             data: newAdmin

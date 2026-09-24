@@ -1,28 +1,25 @@
 require('dotenv').config();
 const express = require("express");
+const cors = require("cors");
 const connectDatabase = require("./src/config/database");
-
-// Require routers
-const registerRouter = require("./src/feature/register/register.router");
+const route = require("./src/router/main.router");
 
 const app = express();
+const PORT = 3000;
 
-// Middleware để parse body JSON
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
+app.use(cors());
 
-// Kết nối tới Database
-connectDatabase().catch(err => console.error("Không thể kết nối database:", err));
+route(app);
 
-// Khai báo các Routes
-app.use('/api/auth', registerRouter);
-
-// Base route kiểm tra server
-app.get('/', (req, res) => {
-    res.json({ message: "Hello API!" });
-});
-
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-    console.log(`Server running at http://192.168.4.102:${PORT}`);
-});
+connectDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Server running at http://192.168.4.108:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error("Database connection failed:", error.message);
+    process.exitCode = 1;
+  });
