@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const K = require('../../common/k');
 
 const authSchema = new mongoose.Schema({
     // Thông tin đăng nhập
@@ -16,7 +17,7 @@ const authSchema = new mongoose.Schema({
     // Phân quyền
     role: {
         type: String,
-        enum: ['admin', 'manager', 'staff', 'guest'],
+        enum: K.ROLES,
         default: 'staff',
         required: true
     },
@@ -31,8 +32,7 @@ const authSchema = new mongoose.Schema({
         ref: 'Table',
         required: function () { return this.role === 'guest'; }
     },
-    // Trạng thái & Bảo mật
-    isActive: { type: Boolean, default: true },
+    status: { type: String, default: 'active', enum: ['active', 'inactive'] },
     refreshToken: { type: String },
 }, {
     timestamps: true,
@@ -41,9 +41,12 @@ const authSchema = new mongoose.Schema({
 
 // Thiết lập tự động xóa các trường nhạy cảm khi trả về JSON cho client
 authSchema.set('toJSON', {
-    transform: function (doc, ret, options) {
+    transform: function (_, ret, _) {
+        ret.idUser = ret._id;
+        delete ret._id;
         delete ret.password;
         delete ret.refreshToken;
+        delete ret.__v;
         return ret;
     }
 });

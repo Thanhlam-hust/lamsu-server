@@ -1,0 +1,464 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Lamsu API Documentation",
+    "description": "Tài liệu API cho Lamsu Server",
+    "version": "1.0.0"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "Authorization",
+      "description": "Bearer Token"
+    }
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Đăng ký tài khoản",
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "numberPhone": {
+                  "example": "any"
+                },
+                "displayName": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                },
+                "role": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Đăng ký thành công",
+            "schema": {
+              "$ref": "#/definitions/RegisterResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Đăng nhập",
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công",
+            "schema": {
+              "$ref": "#/definitions/LoginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/branch/": {
+      "post": {
+        "tags": [
+          "Branch"
+        ],
+        "summary": "Tạo chi nhánh mới",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "branchCode": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "address": {
+                  "example": "any"
+                },
+                "otherFields": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tạo thành công",
+            "schema": {
+              "$ref": "#/definitions/BranchResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Branch"
+        ],
+        "summary": "Lấy danh sách chi nhánh",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy thành công",
+            "schema": {
+              "$ref": "#/definitions/BranchListResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/branch/{id}": {
+      "put": {
+        "tags": [
+          "Branch"
+        ],
+        "summary": "Cập nhật chi nhánh",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cập nhật thành công",
+            "schema": {
+              "$ref": "#/definitions/BranchResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Branch"
+        ],
+        "summary": "Xóa chi nhánh",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xóa thành công",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Xoá chi nhánh thành công"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "RegisterResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "message": {
+          "type": "string",
+          "example": "Đăng ký tài khoản thành công"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "idUser": {
+              "type": "string",
+              "example": "6ab51fba..."
+            },
+            "email": {
+              "type": "string",
+              "example": "user@example.com"
+            },
+            "displayName": {
+              "type": "string",
+              "example": "Hải"
+            },
+            "numberPhone": {
+              "type": "string",
+              "example": "0123456789"
+            },
+            "role": {
+              "type": "string",
+              "example": "admin"
+            },
+            "isActive": {
+              "type": "boolean",
+              "example": true
+            },
+            "createdAt": {
+              "type": "string",
+              "example": "2026-09-24T09:50:50.958Z"
+            }
+          }
+        },
+        "access_token": {},
+        "refresh_token": {}
+      }
+    },
+    "LoginResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "message": {
+          "type": "string",
+          "example": "Đăng nhập thành công"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "idUser": {
+              "type": "string",
+              "example": "6ab51fba..."
+            },
+            "email": {
+              "type": "string",
+              "example": "user@example.com"
+            },
+            "displayName": {
+              "type": "string",
+              "example": "Hải"
+            },
+            "numberPhone": {
+              "type": "string",
+              "example": "0123456789"
+            },
+            "role": {
+              "type": "string",
+              "example": "admin"
+            },
+            "isActive": {
+              "type": "boolean",
+              "example": true
+            }
+          }
+        },
+        "access_token": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        },
+        "refresh_token": {
+          "type": "string",
+          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        }
+      }
+    },
+    "Branch": {
+      "type": "object",
+      "properties": {
+        "idBranch": {
+          "type": "string",
+          "example": "6ab51fc..."
+        },
+        "branchCode": {
+          "type": "string",
+          "example": "CN01"
+        },
+        "name": {
+          "type": "string",
+          "example": "Chi nhánh Trung tâm"
+        },
+        "phone": {
+          "type": "string",
+          "example": "0901234567"
+        },
+        "address": {
+          "type": "string",
+          "example": "123 Đường ABC"
+        },
+        "province": {
+          "type": "string",
+          "example": "Hà Nội"
+        },
+        "ward": {
+          "type": "string",
+          "example": "Phường XYZ"
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "latitude": {
+              "type": "number",
+              "example": 21.028511
+            },
+            "longitude": {
+              "type": "number",
+              "example": 105.804817
+            }
+          }
+        },
+        "openingTime": {
+          "type": "string",
+          "example": "08:00"
+        },
+        "closingTime": {
+          "type": "string",
+          "example": "22:00"
+        },
+        "managerId": {},
+        "description": {
+          "type": "string",
+          "example": "Chi nhánh chính"
+        },
+        "status": {
+          "type": "string",
+          "example": "active"
+        },
+        "createdAt": {
+          "type": "string",
+          "example": "2026-09-24T09:50:50.958Z"
+        },
+        "updatedAt": {
+          "type": "string",
+          "example": "2026-09-24T09:50:50.958Z"
+        }
+      }
+    },
+    "BranchResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "message": {
+          "type": "string",
+          "example": "Tạo chi nhánh thành công"
+        },
+        "data": {
+          "$ref": "#/definitions/Branch"
+        }
+      }
+    },
+    "BranchListResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "message": {
+          "type": "string",
+          "example": "Lấy danh sách chi nhánh thành công"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Branch"
+          }
+        }
+      }
+    }
+  }
+}
