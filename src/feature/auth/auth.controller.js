@@ -1,7 +1,7 @@
 const authService = require('./auth.service');
 const { SuccessResponse } = require('../../core/success.response');
 const { BadRequestError } = require('../../core/error.response');
-const K = require('../../common/k');
+const { K } = require('../../common/k');
 
 const register = async (req, res, next) => {
     try {
@@ -70,8 +70,34 @@ const login = async (req, res, next) => {
     }
 }
 
+const updateInformation = async (req, res, next) => {
+    try {
+        const { displayName, numberPhone, role, isActive } = req.body;
+        const { id } = req.params;
+        const requester = req.user;
+
+        const user = await authService.updateInformation({
+            id,
+            displayName,
+            numberPhone,
+            role,
+            isActive,
+            requester
+        });
+
+        new SuccessResponse({
+            message: 'Cập nhật thông tin thành công',
+            data: user
+        }).send(res);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
 
 module.exports = {
     register,
-    login
+    login,
+    updateInformation
 };

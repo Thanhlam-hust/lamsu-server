@@ -2,6 +2,7 @@ const Auth = require('./auth.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { ConflictError, BadRequestError } = require('../../core/error.response');
+const { K } = require('../../common/k');
 
 const register = async ({ email, numberPhone, displayName, password, role }) => {
     const existingUser = await Auth.findOne({ email });
@@ -55,7 +56,49 @@ const login = async ({ email, password }) => {
     };
 };
 
+const updateInformation = async ({ id, displayName, numberPhone, role, isActive, requester }) => {
+    const user = await Auth.findById(id);
+
+    if (!user) {
+        throw new BadRequestError({
+            message: 'Tài khoản không tồn tại.',
+            code: K.CODE_DATA_NOT_FOUND
+        });
+    }
+
+    // Người dùng chỉ được sửa thông tin của chính mình
+    // Admin có thể sửa tài khoản của người khác
+    if (requester.idUser.toString() !== id && requester.role !== 'admin') {
+        throw new BadRequestError({
+            message: 'Bạn không có quyền cập nhật tài khoản này.',
+            code: K.CODE_FORBIDDEN
+        });
+    }
+
+    // Thông tin cơ bản
+    if (displayName !== undefined) {
+        user.displayName = displayName;
+    }
+
+    if (numberPhone !== undefined) {
+        user.numberPhone = numberPhone;
+    }
+
+    if (requester.role === 'admin') {
+        if (role !== undefined) {
+            user.role = role;
+        }
+
+        if (isActive !== undefined) {
+            user.isActive = isActive;
+        }
+    }
+    await user.save();
+    return user;
+};
+
 module.exports = {
     register,
-    login
+    login,
+    updateInformation
 };

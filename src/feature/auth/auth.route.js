@@ -26,4 +26,16 @@ router.post('/login',
     authController.login
 );
 
+router.put('/update-information',
+    /* 
+       #swagger.tags = ['Auth']
+       #swagger.summary = 'Cập nhật thông tin tài khoản'
+       #swagger.responses[200] = {
+           description: 'Cập nhật thông tin thành công',
+           schema: { $ref: '#/definitions/UpdateInformationResponse' }
+       }
+    */
+    authController.updateInformation
+);
+
 module.exports = router;
