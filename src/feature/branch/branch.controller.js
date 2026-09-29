@@ -80,12 +80,50 @@ const getBranchEmployees = async (req, res, next) => {
     }
 };
 
+const createBranchManager = async (req, res, next) => {
+    try {
+        const { branchId } = req.params;
+
+        const {
+            email,
+            numberPhone,
+            displayName,
+            password
+        } = req.body;
+
+        if (!email || !displayName || !password) {
+            throw new BadRequestError({
+                message: 'Vui lòng cung cấp email, displayName và password.',
+                code: K.CODE_MISSING_DATA
+            });
+        }
+
+        const manager = await branchService.createBranchManager(
+            branchId,
+            {
+                email,
+                numberPhone,
+                displayName,
+                password
+            }
+        );
+
+        new SuccessResponse({
+            message: 'Tạo quản lý chi nhánh thành công',
+            data: manager
+        }).send(res);
+
+    } catch (error) {
+        next(error);
+    }
+};
 module.exports = {
     createBranch,
     getAllBranches,
     updateBranch,
     deleteBranch,
-    getBranchEmployees
+    getBranchEmployees,
+    createBranchManager
 };
 
 

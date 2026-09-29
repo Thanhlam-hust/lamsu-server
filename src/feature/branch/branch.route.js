@@ -58,8 +58,14 @@ router.delete('/:id', verifyToken,
     branchController.deleteBranch
 );
 
+router.post(
+    '/:branchId/manager',
+    verifyToken,
+    branchController.createBranchManager
+);
 router.get(
-    '/branches/:branchId/employees',
+    '/:branchId/employees',
+    verifyToken,
     branchController.getBranchEmployees
 );
 

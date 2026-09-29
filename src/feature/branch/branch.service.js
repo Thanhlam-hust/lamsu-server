@@ -1,6 +1,10 @@
 const Branch = require('./branch.model');
+const Auth = require('../auth/auth.model');
+const authService = require('../auth/auth.service');
+
 const { ConflictError, NotFoundError } = require('../../core/error.response');
 const K = require('../../common/k');
+
 
 const createBranch = async (payload) => {
     const existingBranch = await Branch.findOne({ branchCode: payload.branchCode });
@@ -66,11 +70,48 @@ const getBranchEmployees = async (branchId) => {
         role: { $ne: 'manager' }
     }).select('-password');
 };
+const createBranchManager = async (branchId, payload) => {
+    const branch = await Branch.findById(branchId);
+
+    if (!branch) {
+        throw new NotFoundError({
+            message: 'Không tìm thấy chi nhánh.',
+            code: K.CODE_DATA_NOT_FOUND
+        });
+    }
+
+    // Kiểm tra chi nhánh đã có quản lý chưa
+    if (branch.managerId) {
+        throw new ConflictError({
+            message: 'Chi nhánh này đã có quản lý.',
+            code: K.CODE_DATA_EXISTS
+        });
+    }
+
+    // Tạo tài khoản quản lý
+    const manager = await authService.register({
+        email: payload.email,
+        numberPhone: payload.numberPhone,
+        displayName: payload.displayName,
+        password: payload.password,
+        role: 'manager',
+        branchId: branch._id
+    });
+
+    // Gắn quản lý vào chi nhánh
+    branch.managerId = manager._id;
+
+    await branch.save();
+
+    return manager;
+};
+
 
 module.exports = {
     createBranch,
     getAllBranches,
     updateBranch,
     deleteBranch,
-    getBranchEmployees
+    getBranchEmployees,
+    createBranchManager
 };

@@ -332,7 +332,51 @@
         ]
       }
     },
-    "/api/branch/branches/{branchId}/employees": {
+    "/api/branch/{branchId}/manager": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "example": "any"
+                },
+                "numberPhone": {
+                  "example": "any"
+                },
+                "displayName": {
+                  "example": "any"
+                },
+                "password": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/branch/{branchId}/employees": {
       "get": {
         "description": "",
         "parameters": [
@@ -340,6 +384,11 @@
             "name": "branchId",
             "in": "path",
             "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
             "type": "string"
           }
         ],

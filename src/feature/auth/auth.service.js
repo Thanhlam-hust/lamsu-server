@@ -4,22 +4,33 @@ const jwt = require('jsonwebtoken');
 const { ConflictError, BadRequestError } = require('../../core/error.response');
 const K = require('../../common/k');
 
-const register = async ({ email, numberPhone, displayName, password, role }) => {
+const register = async ({
+    email,
+    numberPhone,
+    displayName,
+    password,
+    role,
+    branchId
+}) => {
     const existingUser = await Auth.findOne({ email });
+
     if (existingUser) {
         throw new ConflictError({
             message: 'Email này đã được sử dụng.',
             code: 5
         });
     }
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     const newAdmin = await Auth.create({
         email,
         password: hashedPassword,
         displayName,
         numberPhone,
-        role: role
+        role,
+        branchId
     });
 
     return newAdmin;
