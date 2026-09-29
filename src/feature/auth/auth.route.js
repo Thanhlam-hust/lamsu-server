@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('./auth.controller');
+const { verifyToken } = require('../../middleware/auth.middleware.js');
 
-router.post('/register', 
+router.post('/register',
     /* 
        #swagger.tags = ['Auth']
        #swagger.summary = 'Đăng ký tài khoản'
@@ -26,16 +27,16 @@ router.post('/login',
     authController.login
 );
 
-router.put('/update-information',
+
+router.post('/reset-password',
     /* 
        #swagger.tags = ['Auth']
-       #swagger.summary = 'Cập nhật thông tin tài khoản'
+       #swagger.summary = 'Đặt lại mật khẩu'
        #swagger.responses[200] = {
-           description: 'Cập nhật thông tin thành công',
-           schema: { $ref: '#/definitions/UpdateInformationResponse' }
+           description: 'Đặt lại mật khẩu thành công'
        }
     */
-    authController.updateInformation
+    authController.resetPassword
 );
 
 module.exports = router;

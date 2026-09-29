@@ -96,12 +96,12 @@
         }
       }
     },
-    "/api/auth/update-information": {
-      "put": {
+    "/api/auth/reset-password": {
+      "post": {
         "tags": [
           "Auth"
         ],
-        "summary": "Cập nhật thông tin tài khoản",
+        "summary": "Đặt lại mật khẩu",
         "description": "",
         "parameters": [
           {
@@ -110,16 +110,10 @@
             "schema": {
               "type": "object",
               "properties": {
-                "displayName": {
+                "email": {
                   "example": "any"
                 },
-                "numberPhone": {
-                  "example": "any"
-                },
-                "role": {
-                  "example": "any"
-                },
-                "isActive": {
+                "newPassword": {
                   "example": "any"
                 }
               }
@@ -128,10 +122,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Cập nhật thông tin thành công",
-            "schema": {
-              "$ref": "#/definitions/UpdateInformationResponse"
-            }
+            "description": "Đặt lại mật khẩu thành công"
           }
         }
       }
@@ -292,6 +283,97 @@
             "bearerAuth": []
           }
         ]
+      }
+    },
+    "/api/me/": {
+      "get": {
+        "tags": [
+          "Me"
+        ],
+        "summary": "Lấy thông tin cá nhân",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Me"
+        ],
+        "summary": "Cập nhật thông tin cá nhân",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "displayName": {
+                  "example": "any"
+                },
+                "numberPhone": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/me/change-password": {
+      "put": {
+        "tags": [
+          "Me"
+        ],
+        "summary": "Đổi mật khẩu cá nhân",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "oldPassword": {
+                  "example": "any"
+                },
+                "newPassword": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     }
   },
