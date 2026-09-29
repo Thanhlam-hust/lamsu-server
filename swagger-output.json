@@ -127,6 +127,109 @@
         }
       }
     },
+    "/api/auth/me": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Lấy thông tin tài khoản đăng nhập",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy thông tin thành công",
+            "schema": {
+              "$ref": "#/definitions/InformationResponse"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Cập nhật thông tin tài khoản",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "displayName": {
+                  "example": "any"
+                },
+                "numberPhone": {
+                  "example": "any"
+                },
+                "role": {
+                  "example": "any"
+                },
+                "isActive": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cập nhật thông tin thành công",
+            "schema": {
+              "$ref": "#/definitions/UpdateInformationResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/me/change-password": {
+      "put": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "Đổi mật khẩu",
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "oldPassword": {
+                  "example": "any"
+                },
+                "newPassword": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Đổi mật khẩu thành công"
+          }
+        }
+      }
+    },
     "/api/branch/": {
       "post": {
         "tags": [
@@ -283,97 +386,6 @@
             "bearerAuth": []
           }
         ]
-      }
-    },
-    "/api/me/": {
-      "get": {
-        "tags": [
-          "Me"
-        ],
-        "summary": "Lấy thông tin cá nhân",
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Me"
-        ],
-        "summary": "Cập nhật thông tin cá nhân",
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "displayName": {
-                  "example": "any"
-                },
-                "numberPhone": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/me/change-password": {
-      "put": {
-        "tags": [
-          "Me"
-        ],
-        "summary": "Đổi mật khẩu cá nhân",
-        "description": "",
-        "parameters": [
-          {
-            "name": "authorization",
-            "in": "header",
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "oldPassword": {
-                  "example": "any"
-                },
-                "newPassword": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
       }
     }
   },

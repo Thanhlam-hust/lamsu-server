@@ -39,4 +39,42 @@ router.post('/reset-password',
     authController.resetPassword
 );
 
+router.get('/me',
+    verifyToken,
+    /* 
+       #swagger.tags = ['Auth']
+       #swagger.summary = 'Lấy thông tin tài khoản đăng nhập'
+       #swagger.responses[200] = {
+           description: 'Lấy thông tin thành công',
+           schema: { $ref: '#/definitions/InformationResponse' }
+       }
+    */
+    authController.getInformation
+);
+
+router.put('/me',
+    verifyToken,
+    /* 
+       #swagger.tags = ['Auth']
+       #swagger.summary = 'Cập nhật thông tin tài khoản'
+       #swagger.responses[200] = {
+           description: 'Cập nhật thông tin thành công',
+           schema: { $ref: '#/definitions/UpdateInformationResponse' }
+       }
+    */
+    authController.updateInformation
+);
+
+router.put('/me/change-password',
+    verifyToken,
+    /* 
+       #swagger.tags = ['Auth']
+       #swagger.summary = 'Đổi mật khẩu'
+       #swagger.responses[200] = {
+           description: 'Đổi mật khẩu thành công'
+       }
+    */
+    authController.changePassword
+);
+
 module.exports = router;

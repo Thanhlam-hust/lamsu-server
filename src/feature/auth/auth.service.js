@@ -75,8 +75,88 @@ const resetPassword = async ({ email, newPassword }) => {
     return user;
 };
 
+
+
+const updateInformation = async ({ id, displayName, numberPhone, role, isActive, requester }) => {
+    const user = await Auth.findById(id);
+
+    if (!user) {
+        throw new BadRequestError({
+            message: 'Tài khoản không tồn tại.',
+            code: K.CODE_DATA_NOT_FOUND
+        });
+    }
+
+    if (requester.idUser.toString() !== id && requester.role !== 'admin') {
+        throw new BadRequestError({
+            message: 'Bạn không có quyền cập nhật tài khoản này.',
+            code: K.CODE_FORBIDDEN
+        });
+    }
+
+    if (displayName !== undefined) {
+        user.displayName = displayName;
+    }
+
+    if (numberPhone !== undefined) {
+        user.numberPhone = numberPhone;
+    }
+
+    if (requester.role === 'admin') {
+        if (role !== undefined) {
+            user.role = role;
+        }
+
+        if (isActive !== undefined) {
+            user.isActive = isActive;
+        }
+    }
+    await user.save();
+    return user;
+};
+
+const getInformation = async (id) => {
+    const user = await Auth.findById(id);
+    if (!user) {
+        throw new BadRequestError({
+            message: 'Tài khoản không tồn tại.',
+            code: K.CODE_DATA_NOT_FOUND
+        });
+    }
+    return user;
+};
+
+const changePassword = async ({ id, oldPassword, newPassword }) => {
+    const user = await Auth.findById(id);
+    if (!user) {
+        throw new BadRequestError({
+            message: 'Tài khoản không tồn tại.',
+            code: K.CODE_DATA_NOT_FOUND
+        });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+        throw new BadRequestError({
+            message: 'Mật khẩu cũ không chính xác.',
+            code: K.CODE_WRONG_PASSWORD
+        });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+    
+    user.password = hashedPassword;
+    await user.save();
+    
+    return user;
+};
+
 module.exports = {
     register,
     login,
-    resetPassword
+    resetPassword,
+    updateInformation,
+    getInformation,
+    changePassword
 };
