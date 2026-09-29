@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('./auth.controller');
+const { verifyToken } = require('../../middleware/auth.middleware');
 
 router.post('/register', 
     /* 
@@ -26,7 +27,7 @@ router.post('/login',
     authController.login
 );
 
-router.put('/update-information',
+router.put('/update-information/:id', verifyToken,
     /* 
        #swagger.tags = ['Auth']
        #swagger.summary = 'Cập nhật thông tin tài khoản'
@@ -36,6 +37,13 @@ router.put('/update-information',
        }
     */
     authController.updateInformation
+);
+
+router.post('/refresh-token',
+    /* 
+       #swagger.tags = ['Auth']     
+    */
+    authController.refreshToken
 );
 
 module.exports = router;

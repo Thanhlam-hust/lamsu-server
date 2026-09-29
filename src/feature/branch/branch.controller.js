@@ -65,9 +65,27 @@ const deleteBranch = async (req, res, next) => {
     }
 };
 
+const getBranchEmployees = async (req, res, next) => {
+    try {
+        const { branchId } = req.params;
+
+        const employees = await branchService.getBranchEmployees(branchId);
+
+        new SuccessResponse({
+            message: 'Lấy danh sách nhân viên thành công',
+            data: employees
+        }).send(res);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createBranch,
     getAllBranches,
     updateBranch,
-    deleteBranch
+    deleteBranch,
+    getBranchEmployees
 };
+
+

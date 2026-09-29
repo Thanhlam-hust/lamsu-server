@@ -58,4 +58,9 @@ router.delete('/:id', verifyToken,
     branchController.deleteBranch
 );
 
+router.get(
+    '/branches/:branchId/employees',
+    branchController.getBranchEmployees
+);
+
 module.exports = router;

@@ -51,9 +51,26 @@ const deleteBranch = async (id) => {
     return deletedBranch;
 };
 
+const getBranchEmployees = async (branchId) => {
+    const branch = await Branch.findById(branchId);
+
+    if (!branch) {
+        throw new NotFoundError({
+            message: 'Không tìm thấy chi nhánh.',
+            code: K.CODE_DATA_NOT_FOUND
+        });
+    }
+
+    return await User.find({
+        branchId,
+        role: { $ne: 'manager' }
+    }).select('-password');
+};
+
 module.exports = {
     createBranch,
     getAllBranches,
     updateBranch,
-    deleteBranch
+    deleteBranch,
+    getBranchEmployees
 };

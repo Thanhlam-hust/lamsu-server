@@ -95,9 +95,41 @@ const updateInformation = async (req, res, next) => {
     }
 }
 
+const refreshToken = async (req, res, next) => {
+    try {
+        const { refresh_token } = req.body;
+
+        if (!refresh_token) {
+            throw new BadRequestError({
+                message: 'Refresh token không được để trống.',
+                code: K.CODE_MISSING_DATA
+            });
+        }
+
+        const {
+            user,
+            access_token,
+            refresh_token: new_refresh_token
+        } = await authService.refreshToken({
+            refresh_token
+        });
+
+        new SuccessResponse({
+            message: 'Làm mới token thành công',
+            data: user,
+            access_token,
+            refresh_token: new_refresh_token
+        }).send(res);
+
+    } catch (error) {
+        next(error);
+    }
+};
+
 
 module.exports = {
     register,
     login,
-    updateInformation
+    updateInformation,
+    refreshToken
 };

@@ -96,7 +96,7 @@
         }
       }
     },
-    "/api/auth/update-information": {
+    "/api/auth/update-information/{id}": {
       "put": {
         "tags": [
           "Auth"
@@ -104,6 +104,17 @@
         "summary": "Cập nhật thông tin tài khoản",
         "description": "",
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -132,6 +143,33 @@
             "schema": {
               "$ref": "#/definitions/UpdateInformationResponse"
             }
+          }
+        }
+      }
+    },
+    "/api/auth/refresh-token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "refresh_token": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
           }
         }
       }
@@ -292,6 +330,24 @@
             "bearerAuth": []
           }
         ]
+      }
+    },
+    "/api/branch/branches/{branchId}/employees": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "branchId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     }
   },
