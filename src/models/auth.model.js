@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const K = require('../../common/k');
+const K = require('../common/k');
 
 const authSchema = new mongoose.Schema({
     // Thông tin đăng nhập

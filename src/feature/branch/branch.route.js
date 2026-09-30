@@ -7,6 +7,7 @@ router.post('/', verifyToken,
     /* 
        #swagger.tags = ['Branch']
        #swagger.summary = 'Tạo chi nhánh mới'
+       #swagger.description = 'Chỉ có Admin mới có quyền tạo chi nhánh mới.'
        #swagger.security = [{ "bearerAuth": [] }]
        #swagger.responses[200] = {
            description: 'Tạo thành công',
@@ -20,7 +21,13 @@ router.get('/', verifyToken,
     /* 
        #swagger.tags = ['Branch']
        #swagger.summary = 'Lấy danh sách chi nhánh'
+       #swagger.description = 'Lấy danh sách tất cả các chi nhánh. Có thể lọc theo trạng thái hoạt động.'
        #swagger.security = [{ "bearerAuth": [] }]
+       #swagger.parameters['status'] = {
+           in: 'query',
+           description: 'Lọc theo trạng thái (active/inactive)',
+           type: 'string'
+       }
        #swagger.responses[200] = {
            description: 'Lấy thành công',
            schema: { $ref: '#/definitions/BranchListResponse' }
@@ -32,7 +39,8 @@ router.get('/', verifyToken,
 router.put('/:id', verifyToken,
     /* 
        #swagger.tags = ['Branch']
-       #swagger.summary = 'Cập nhật chi nhánh'
+       #swagger.summary = 'Cập nhật chi nhánh (Bao gồm enable/disable)'
+       #swagger.description = 'Admin có toàn quyền chỉnh sửa bất kỳ chi nhánh nào. Manager chỉ có quyền chỉnh sửa (hoặc disable) chi nhánh của chính mình.'
        #swagger.security = [{ "bearerAuth": [] }]
        #swagger.responses[200] = {
            description: 'Cập nhật thành công',
@@ -42,20 +50,45 @@ router.put('/:id', verifyToken,
     branchController.updateBranch
 );
 
-router.delete('/:id', verifyToken,
+router.put('/:id/status', verifyToken,
     /* 
        #swagger.tags = ['Branch']
-       #swagger.summary = 'Xóa chi nhánh'
+       #swagger.summary = 'Cập nhật trạng thái chi nhánh (active/inactive)'
+       #swagger.description = 'Admin hoặc Manager của chính chi nhánh đó mới có quyền. Khi đổi trạng thái, toàn bộ nhân viên/quản lý trong chi nhánh cũng sẽ bị đổi trạng thái theo.'
+       #swagger.security = [{ "bearerAuth": [] }]
+       #swagger.parameters['body'] = {
+           in: 'body',
+           required: true,
+           schema: {
+               status: 'inactive'
+           }
+       }
+       #swagger.responses[200] = {
+           description: 'Cập nhật thành công',
+           schema: { $ref: '#/definitions/BranchResponse' }
+       }
+    */
+    branchController.updateBranchStatus
+);
+
+router.get('/employees', verifyToken,
+    /* 
+       #swagger.tags = ['Branch']
+       #swagger.summary = 'Lấy danh sách nhân viên'
+       #swagger.description = 'Admin xem toàn bộ nhân viên các chi nhánh. Manager chỉ xem được nhân viên trong chi nhánh của mình.'
        #swagger.security = [{ "bearerAuth": [] }]
        #swagger.responses[200] = {
-           description: 'Xóa thành công',
+           description: 'Lấy danh sách thành công',
            schema: {
                status: 'success',
-               message: 'Xoá chi nhánh thành công'
+               message: 'Lấy danh sách nhân viên thành công',
+               data: [{
+                   $ref: '#/definitions/UserResponse'
+               }]
            }
        }
     */
-    branchController.deleteBranch
+    branchController.getBranchEmployees
 );
 
 module.exports = router;

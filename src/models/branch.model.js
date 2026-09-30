@@ -53,7 +53,7 @@ const branchSchema = new mongoose.Schema(
         },
         managerId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
+            ref: 'Auth',
             default: null,
         },
         description: {

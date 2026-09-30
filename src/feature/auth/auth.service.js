@@ -1,28 +1,63 @@
-const Auth = require('./auth.model');
+const Auth = require('../../models/auth.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { ConflictError, BadRequestError } = require('../../core/error.response');
 const K = require('../../common/k');
 
-const register = async ({ email, numberPhone, displayName, password, role }) => {
+const register = async ({
+    email,
+    numberPhone,
+    displayName,
+    password,
+    role,
+    branchId
+}) => {
     const existingUser = await Auth.findOne({ email });
+
     if (existingUser) {
         throw new ConflictError({
             message: 'Email này đã được sử dụng.',
             code: 5
         });
     }
+
+    if (role === 'manager' && branchId) {
+        const Branch = require('../../models/branch.model');
+        const branch = await Branch.findById(branchId);
+        if (!branch) {
+            throw new BadRequestError({
+                message: 'Chi nhánh không tồn tại.',
+                code: K.CODE_DATA_NOT_FOUND
+            });
+        }
+        if (branch.managerId) {
+            throw new ConflictError({
+                message: 'Chi nhánh này đã có quản lý.',
+                code: K.CODE_DATA_EXISTS
+            });
+        }
+    }
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const newAdmin = await Auth.create({
+
+    const newUser = await Auth.create({
         email,
         password: hashedPassword,
         displayName,
         numberPhone,
-        role: role
+        role,
+        branchId
     });
 
-    return newAdmin;
+    if (role === 'manager' && branchId) {
+        const Branch = require('../../models/branch.model');
+        const branch = await Branch.findById(branchId);
+        branch.managerId = newUser._id;
+        await branch.save();
+    }
+
+    return newUser;
 };
 
 const login = async ({ email, password }) => {
@@ -68,16 +103,16 @@ const resetPassword = async ({ email, newPassword }) => {
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-    
+
     user.password = hashedPassword;
     await user.save();
-    
+
     return user;
 };
 
 
 
-const updateInformation = async ({ id, displayName, numberPhone, role, isActive, requester }) => {
+const updateInformation = async ({ id, displayName, numberPhone, role, status, requester }) => {
     const user = await Auth.findById(id);
 
     if (!user) {
@@ -90,7 +125,7 @@ const updateInformation = async ({ id, displayName, numberPhone, role, isActive,
     if (requester.idUser.toString() !== id && requester.role !== 'admin') {
         throw new BadRequestError({
             message: 'Bạn không có quyền cập nhật tài khoản này.',
-            code: K.CODE_FORBIDDEN
+            code: K.CODE_UNAUTHORIZED_ACTION
         });
     }
 
@@ -107,8 +142,8 @@ const updateInformation = async ({ id, displayName, numberPhone, role, isActive,
             user.role = role;
         }
 
-        if (isActive !== undefined) {
-            user.isActive = isActive;
+        if (status !== undefined) {
+            user.status = status;
         }
     }
     await user.save();
@@ -145,11 +180,79 @@ const changePassword = async ({ id, oldPassword, newPassword }) => {
 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-    
+
     user.password = hashedPassword;
     await user.save();
-    
+
     return user;
+};
+
+const refreshToken = async ({ refresh_token }) => {
+    if (!refresh_token) {
+        throw new BadRequestError({
+            message: 'Refresh token không được để trống.',
+            code: K.CODE_MISSING_DATA
+        });
+    }
+
+    const JWT_SECRET = process.env.JWT_SECRET || 'lamsu_secret';
+
+    let decoded;
+
+    try {
+        decoded = jwt.verify(refresh_token, JWT_SECRET);
+    } catch (error) {
+        throw new BadRequestError({
+            message: 'Refresh token không hợp lệ hoặc đã hết hạn.',
+            code: K.CODE_INVALID_TOKEN
+        });
+    }
+
+    const user = await Auth.findById(decoded.idUser);
+
+    if (!user) {
+        throw new BadRequestError({
+            message: 'Tài khoản không tồn tại.',
+            code: K.CODE_DATA_NOT_FOUND
+        });
+    }
+
+    // Kiểm tra refresh token gửi lên có đúng token đang lưu DB không
+    if (user.refreshToken !== refresh_token) {
+        throw new BadRequestError({
+            message: 'Refresh token không hợp lệ.',
+            code: K.CODE_INVALID_TOKEN
+        });
+    }
+
+    const payload = {
+        idUser: user._id,
+        role: user.role
+    };
+
+    // Tạo access token mới
+    const access_token = jwt.sign(
+        payload,
+        JWT_SECRET,
+        { expiresIn: '1h' }
+    );
+
+    // Tạo refresh token mới
+    const new_refresh_token = jwt.sign(
+        payload,
+        JWT_SECRET,
+        { expiresIn: '7d' }
+    );
+
+    // Lưu refresh token mới
+    user.refreshToken = new_refresh_token;
+    await user.save();
+
+    return {
+        user,
+        access_token,
+        refresh_token: new_refresh_token
+    };
 };
 
 module.exports = {
@@ -158,5 +261,6 @@ module.exports = {
     resetPassword,
     updateInformation,
     getInformation,
-    changePassword
+    changePassword,
+    refreshToken
 };

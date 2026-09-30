@@ -24,29 +24,45 @@
         "tags": [
           "Auth"
         ],
-        "summary": "Đăng ký tài khoản",
-        "description": "",
+        "summary": "Đăng ký tài khoản (Phân quyền động)",
+        "description": "  Hệ thống phân quyền khi tạo tài khoản:  - **Không có Token (Chưa đăng nhập)**: Mặc định tạo tài khoản **Admin root**. Không yêu cầu truyền `branchId` và `role`.  - **Có Token (Đã đăng nhập)**:   - Bắt buộc phải có `branchId` (để gán user vào chi nhánh).  - **Admin**: Được tạo tài khoản `manager`, `staff`, `guest`. (Không được tạo thêm Admin).  - **Manager**: Được tạo tài khoản `staff`, `guest`. (Không được tạo Admin hoặc Manager khác).  - Các role khác không có quyền truy cập.  - Nếu tạo tài khoản `manager`, hệ thống sẽ tự động gán `managerId` ngược lại cho bảng Branch.  ",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
+            "description": "Thông tin tài khoản mới",
+            "required": true,
             "schema": {
               "type": "object",
               "properties": {
                 "email": {
-                  "example": "any"
-                },
-                "numberPhone": {
-                  "example": "any"
-                },
-                "displayName": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "newuser@gmail.com"
                 },
                 "password": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "password123"
+                },
+                "displayName": {
+                  "type": "string",
+                  "example": "Người Dùng Mới"
+                },
+                "numberPhone": {
+                  "type": "string",
+                  "example": "0123456789"
                 },
                 "role": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "manager"
+                },
+                "branchId": {
+                  "type": "string",
+                  "example": "6ab5d6fe8d203b981e5b22d6"
                 }
               }
             }
@@ -59,7 +75,12 @@
               "$ref": "#/definitions/RegisterResponse"
             }
           }
-        }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
       }
     },
     "/api/auth/login": {
@@ -177,7 +198,7 @@
                 "role": {
                   "example": "any"
                 },
-                "isActive": {
+                "status": {
                   "example": "any"
                 }
               }
@@ -230,13 +251,40 @@
         }
       }
     },
+    "/api/auth/refresh-token": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "refresh_token": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/branch/": {
       "post": {
         "tags": [
           "Branch"
         ],
         "summary": "Tạo chi nhánh mới",
-        "description": "",
+        "description": "Chỉ có Admin mới có quyền tạo chi nhánh mới.",
         "parameters": [
           {
             "name": "authorization",
@@ -255,10 +303,34 @@
                 "name": {
                   "example": "any"
                 },
+                "phone": {
+                  "example": "any"
+                },
                 "address": {
                   "example": "any"
                 },
-                "otherFields": {
+                "province": {
+                  "example": "any"
+                },
+                "ward": {
+                  "example": "any"
+                },
+                "location": {
+                  "example": "any"
+                },
+                "openingTime": {
+                  "example": "any"
+                },
+                "closingTime": {
+                  "example": "any"
+                },
+                "managerId": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "status": {
                   "example": "any"
                 }
               }
@@ -284,11 +356,17 @@
           "Branch"
         ],
         "summary": "Lấy danh sách chi nhánh",
-        "description": "",
+        "description": "Lấy danh sách tất cả các chi nhánh. Có thể lọc theo trạng thái hoạt động.",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Lọc theo trạng thái (active/inactive)",
             "type": "string"
           }
         ],
@@ -312,8 +390,8 @@
         "tags": [
           "Branch"
         ],
-        "summary": "Cập nhật chi nhánh",
-        "description": "",
+        "summary": "Cập nhật chi nhánh (Bao gồm enable/disable)",
+        "description": "Admin có toàn quyền chỉnh sửa bất kỳ chi nhánh nào. Manager chỉ có quyền chỉnh sửa (hoặc disable) chi nhánh của chính mình.",
         "parameters": [
           {
             "name": "id",
@@ -325,6 +403,51 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "branchCode": {
+                  "example": "any"
+                },
+                "name": {
+                  "example": "any"
+                },
+                "phone": {
+                  "example": "any"
+                },
+                "address": {
+                  "example": "any"
+                },
+                "province": {
+                  "example": "any"
+                },
+                "ward": {
+                  "example": "any"
+                },
+                "location": {
+                  "example": "any"
+                },
+                "openingTime": {
+                  "example": "any"
+                },
+                "closingTime": {
+                  "example": "any"
+                },
+                "managerId": {
+                  "example": "any"
+                },
+                "description": {
+                  "example": "any"
+                },
+                "status": {
+                  "example": "any"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -340,13 +463,15 @@
             "bearerAuth": []
           }
         ]
-      },
-      "delete": {
+      }
+    },
+    "/api/branch/{id}/status": {
+      "put": {
         "tags": [
           "Branch"
         ],
-        "summary": "Xóa chi nhánh",
-        "description": "",
+        "summary": "Cập nhật trạng thái chi nhánh (active/inactive)",
+        "description": "Admin hoặc Manager của chính chi nhánh đó mới có quyền. Khi đổi trạng thái, toàn bộ nhân viên/quản lý trong chi nhánh cũng sẽ bị đổi trạng thái theo.",
         "parameters": [
           {
             "name": "id",
@@ -358,11 +483,54 @@
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "inactive"
+                }
+              }
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Xóa thành công",
+            "description": "Cập nhật thành công",
+            "schema": {
+              "$ref": "#/definitions/BranchResponse"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/branch/employees": {
+      "get": {
+        "tags": [
+          "Branch"
+        ],
+        "summary": "Lấy danh sách nhân viên",
+        "description": "Admin xem toàn bộ nhân viên các chi nhánh. Manager chỉ xem được nhân viên trong chi nhánh của mình.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy danh sách thành công",
             "schema": {
               "type": "object",
               "properties": {
@@ -372,7 +540,13 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Xoá chi nhánh thành công"
+                  "example": "Lấy danh sách nhân viên thành công"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/UserResponse"
+                  }
                 }
               },
               "xml": {
@@ -424,7 +598,7 @@
               "type": "string",
               "example": "admin"
             },
-            "isActive": {
+            "status": {
               "type": "boolean",
               "example": true
             },
@@ -472,7 +646,7 @@
               "type": "string",
               "example": "admin"
             },
-            "isActive": {
+            "status": {
               "type": "boolean",
               "example": true
             }

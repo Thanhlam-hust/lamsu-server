@@ -25,7 +25,7 @@ const doc = {
         displayName: 'Hải',
         numberPhone: '0123456789',
         role: 'admin',
-        isActive: true,
+        status: true,
         createdAt: '2026-09-24T09:50:50.958Z'
       },
       access_token: null,
@@ -40,7 +40,7 @@ const doc = {
         displayName: 'Hải',
         numberPhone: '0123456789',
         role: 'admin',
-        isActive: true
+        status: true
       },
       access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
       refresh_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
@@ -69,7 +69,7 @@ const doc = {
       status: 'success',
       message: 'Tạo chi nhánh thành công',
       data: {
-          $ref: '#/definitions/Branch'
+        $ref: '#/definitions/Branch'
       }
     },
     BranchListResponse: {
