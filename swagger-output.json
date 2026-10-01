@@ -25,7 +25,7 @@
           "Auth"
         ],
         "summary": "Đăng ký tài khoản (Phân quyền động)",
-        "description": "  Hệ thống phân quyền khi tạo tài khoản:  - **Không có Token (Chưa đăng nhập)**: Mặc định tạo tài khoản **Admin root**. Không yêu cầu truyền `branchId` và `role`.  - **Có Token (Đã đăng nhập)**:   - Bắt buộc phải có `branchId` (để gán user vào chi nhánh).  - **Admin**: Được tạo tài khoản `manager`, `staff`, `guest`. (Không được tạo thêm Admin).  - **Manager**: Được tạo tài khoản `staff`, `guest`. (Không được tạo Admin hoặc Manager khác).  - Các role khác không có quyền truy cập.  - Nếu tạo tài khoản `manager`, hệ thống sẽ tự động gán `managerId` ngược lại cho bảng Branch.  ",
+        "description": "\r  Hệ thống phân quyền khi tạo tài khoản:\r  - **Không có Token (Chưa đăng nhập)**: Mặc định tạo tài khoản **Admin root**. Không yêu cầu truyền `branchId` và `role`.\r  - **Có Token (Đã đăng nhập)**: \r  - Bắt buộc phải có `branchId` (để gán user vào chi nhánh).\r  - **Admin**: Được tạo tài khoản `manager`, `staff`, `guest`. (Không được tạo thêm Admin).\r  - **Manager**: Được tạo tài khoản `staff`, `guest`. (Không được tạo Admin hoặc Manager khác).\r  - Các role khác không có quyền truy cập.\r  - Nếu tạo tài khoản `manager`, hệ thống sẽ tự động gán `managerId` ngược lại cho bảng Branch.\r  ",
         "parameters": [
           {
             "name": "authorization",
@@ -908,6 +908,108 @@
             "bearerAuth": []
           }
         ]
+      }
+    },
+    "/api/table/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "branchId",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tableNumber": {
+                  "example": "any"
+                },
+                "capacity": {
+                  "example": "any"
+                },
+                "status": {
+                  "example": "any"
+                },
+                "branchId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/table/{id}": {
+      "put": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "tableNumber": {
+                  "example": "any"
+                },
+                "capacity": {
+                  "example": "any"
+                },
+                "status": {
+                  "example": "any"
+                },
+                "branchId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
       }
     }
   },
