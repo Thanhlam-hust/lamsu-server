@@ -175,51 +175,12 @@ const updateBranchStatus = async (req, res, next) => {
     }
 };
 
-const getBranchEmployees = async (req, res, next) => {
-    try {
-        const requester = req.user;
-        let branchIdToQuery = null;
-
-        if (requester.role === 'admin') {
-            // Admin có thể xem tất cả nhân viên (không giới hạn chi nhánh)
-            branchIdToQuery = null;
-        } else if (requester.role === 'manager') {
-            // Lấy thông tin user hiện tại để xem thuộc chi nhánh nào
-            const Auth = require('../../models/auth.model');
-            const user = await Auth.findById(requester.idUser);
-            if (!user.branchId) {
-                const { BadRequestError } = require('../../core/error.response');
-                throw new BadRequestError({ 
-                    message: 'Quản lý này chưa được gán vào chi nhánh nào.',
-                    code: K.CODE_UNAUTHORIZED_ACTION
-                });
-            }
-            branchIdToQuery = user.branchId;
-        } else {
-            const { BadRequestError } = require('../../core/error.response');
-            throw new BadRequestError({ 
-                message: 'Không có quyền truy cập danh sách nhân viên.',
-                code: K.CODE_UNAUTHORIZED_ACTION
-            });
-        }
-
-        const employees = await branchService.getBranchEmployees(branchIdToQuery);
-
-        new SuccessResponse({
-            message: 'Lấy danh sách nhân viên thành công',
-            data: employees
-        }).send(res);
-    } catch (error) {
-        next(error);
-    }
-};
 
 module.exports = {
     createBranch,
     getAllBranches,
     updateBranch,
-    updateBranchStatus,
-    getBranchEmployees
+    updateBranchStatus
 };
 
 

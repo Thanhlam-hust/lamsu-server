@@ -71,24 +71,4 @@ router.put('/:id/status', verifyToken,
     branchController.updateBranchStatus
 );
 
-router.get('/employees', verifyToken,
-    /* 
-       #swagger.tags = ['Branch']
-       #swagger.summary = 'Lấy danh sách nhân viên'
-       #swagger.description = 'Admin xem toàn bộ nhân viên các chi nhánh. Manager chỉ xem được nhân viên trong chi nhánh của mình.'
-       #swagger.security = [{ "bearerAuth": [] }]
-       #swagger.responses[200] = {
-           description: 'Lấy danh sách thành công',
-           schema: {
-               status: 'success',
-               message: 'Lấy danh sách nhân viên thành công',
-               data: [{
-                   $ref: '#/definitions/UserResponse'
-               }]
-           }
-       }
-    */
-    branchController.getBranchEmployees
-);
-
 module.exports = router;

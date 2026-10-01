@@ -514,23 +514,41 @@
         ]
       }
     },
-    "/api/branch/employees": {
+    "/api/staff/": {
       "get": {
         "tags": [
-          "Branch"
+          "Staff"
         ],
         "summary": "Lấy danh sách nhân viên",
-        "description": "Admin xem toàn bộ nhân viên các chi nhánh. Manager chỉ xem được nhân viên trong chi nhánh của mình.",
+        "description": "Admin xem tất cả. Manager chỉ xem nhân viên của chi nhánh mình. Có thể filter qua query (vd: ?status=active&position=waiter)",
         "parameters": [
           {
             "name": "authorization",
             "in": "header",
             "type": "string"
+          },
+          {
+            "name": "branchId",
+            "in": "query",
+            "description": "Lọc theo ID chi nhánh (dành cho Admin)",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Lọc theo trạng thái (active, inactive, resigned)",
+            "type": "string"
+          },
+          {
+            "name": "position",
+            "in": "query",
+            "description": "Lọc theo vị trí (waiter, cashier, chef)",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "Lấy danh sách thành công",
+            "description": "Lấy thành công",
             "schema": {
               "type": "object",
               "properties": {
@@ -540,12 +558,66 @@
                 },
                 "message": {
                   "type": "string",
-                  "example": "Lấy danh sách nhân viên thành công"
+                  "example": "Lấy danh sách nhân sự thành công"
                 },
                 "data": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/definitions/UserResponse"
+                    "type": "object",
+                    "properties": {
+                      "_id": {
+                        "type": "string",
+                        "example": "6ab..."
+                      },
+                      "fullName": {
+                        "type": "string",
+                        "example": "Nguyễn Văn A"
+                      },
+                      "numberPhone": {
+                        "type": "string",
+                        "example": "0987654321"
+                      },
+                      "email": {
+                        "type": "string",
+                        "example": "a@gmail.com"
+                      },
+                      "branchId": {
+                        "type": "string",
+                        "example": "6ab..."
+                      },
+                      "position": {
+                        "type": "string",
+                        "example": "waiter"
+                      },
+                      "salary": {
+                        "type": "number",
+                        "example": 5000000
+                      },
+                      "hireDate": {
+                        "type": "string",
+                        "example": "2024-01-01T00:00:00.000Z"
+                      },
+                      "cccd": {
+                        "type": "string",
+                        "example": "012345678910"
+                      },
+                      "address": {
+                        "type": "string",
+                        "example": "Hà Nội"
+                      },
+                      "dateOfBirth": {
+                        "type": "string",
+                        "example": "1999-01-01T00:00:00.000Z"
+                      },
+                      "status": {
+                        "type": "string",
+                        "example": "active"
+                      },
+                      "notes": {
+                        "type": "string",
+                        "example": "Nhân viên chăm chỉ"
+                      }
+                    }
                   }
                 }
               },
@@ -553,6 +625,282 @@
                 "name": "main"
               }
             }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Staff"
+        ],
+        "summary": "Thêm mới nhân viên",
+        "description": "Admin tạo được mọi chi nhánh. Manager tạo tự động gán vào chi nhánh đang quản lý.",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fullName": {
+                  "type": "string",
+                  "example": "Nguyễn Văn A"
+                },
+                "numberPhone": {
+                  "type": "string",
+                  "example": "0987654321"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "a@gmail.com"
+                },
+                "branchId": {
+                  "type": "string",
+                  "example": "6ab..."
+                },
+                "position": {
+                  "type": "string",
+                  "example": "waiter"
+                },
+                "salary": {
+                  "type": "number",
+                  "example": 5000000
+                },
+                "hireDate": {
+                  "type": "string",
+                  "example": "2024-01-01T00:00:00.000Z"
+                },
+                "cccd": {
+                  "type": "string",
+                  "example": "012345678910"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "Hà Nội"
+                },
+                "dateOfBirth": {
+                  "type": "string",
+                  "example": "1999-01-01T00:00:00.000Z"
+                },
+                "status": {
+                  "type": "string",
+                  "example": "active"
+                },
+                "notes": {
+                  "type": "string",
+                  "example": "Nhân viên mới"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thêm thành công"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/staff/positions": {
+      "get": {
+        "tags": [
+          "Staff"
+        ],
+        "summary": "Lấy danh sách các vị trí công việc",
+        "description": "Trả về danh sách 3 vị trí công việc cố định của nhân viên (Phục vụ, Thu ngân, Bếp)",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lấy thành công",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "success"
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Lấy danh sách vị trí nhân sự thành công"
+                },
+                "data": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example": "chef"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Bếp"
+                      }
+                    }
+                  }
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/staff/{id}": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "summary": "Cập nhật thông tin nhân viên",
+        "description": "Admin sửa mọi nhân sự. Manager chỉ sửa được nhân sự ở chi nhánh mình.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fullName": {
+                  "type": "string",
+                  "example": "Nguyễn Văn A (Updated)"
+                },
+                "numberPhone": {
+                  "type": "string",
+                  "example": "0987654321"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "a_update@gmail.com"
+                },
+                "branchId": {
+                  "type": "string",
+                  "example": "6ab..."
+                },
+                "position": {
+                  "type": "string",
+                  "example": "cashier"
+                },
+                "salary": {
+                  "type": "number",
+                  "example": 6000000
+                },
+                "hireDate": {
+                  "type": "string",
+                  "example": "2024-01-01T00:00:00.000Z"
+                },
+                "cccd": {
+                  "type": "string",
+                  "example": "012345678910"
+                },
+                "address": {
+                  "type": "string",
+                  "example": "Hà Nội"
+                },
+                "dateOfBirth": {
+                  "type": "string",
+                  "example": "1999-01-01T00:00:00.000Z"
+                },
+                "status": {
+                  "type": "string",
+                  "example": "active"
+                },
+                "notes": {
+                  "type": "string",
+                  "example": "Đã thăng chức"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sửa thành công"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/staff/{id}/status": {
+      "put": {
+        "tags": [
+          "Staff"
+        ],
+        "summary": "Đổi trạng thái làm việc (active, inactive, resigned)",
+        "description": "Admin đổi mọi trạng thái. Manager chỉ đổi của nhân viên chi nhánh mình.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "example": "inactive"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thành công"
           }
         },
         "security": [

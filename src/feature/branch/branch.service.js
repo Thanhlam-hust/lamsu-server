@@ -77,26 +77,10 @@ const updateBranchStatus = async (id, status) => {
 };
 
 
-const getBranchEmployees = async (branchId) => {
-    let query = { role: { $nin: ['manager', 'admin'] } };
-    
-    if (branchId) {
-        const branch = await Branch.findById(branchId);
-        if (!branch) {
-            throw new NotFoundError({
-                message: 'Không tìm thấy chi nhánh.',
-                code: K.CODE_DATA_NOT_FOUND
-            });
-        }
-        query.branchId = branchId;
-    }
 
-    return await Auth.find(query).select('-password');
-};
 module.exports = {
     createBranch,
     getAllBranches,
     updateBranch,
-    updateBranchStatus,
-    getBranchEmployees
+    updateBranchStatus
 };
